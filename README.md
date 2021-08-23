@@ -10,6 +10,11 @@ Running
 `86craft` should be able to run both in-game and using any ComputerCraft Emulator.
 I personally use [CCEmuX](https://emux.cc/).
 
+Progress
+--------
+My progress can be viewed on [this Google Sheets Page](https://docs.google.com/spreadsheets/d/1eepaNIrG2MulV-X3MGXVQjvNjwEKsK_xqnjEliVDz-g/edit?usp=sharing) which I'll try to update semi-regularly.
+A bit more than 20 instructions have been added thus far, out of the 225 the 8086/8088 actually uses.
+
 Functions
 ---------
 Right now the program can't handle more than a few basic MOV and ADD commands, this'll hopefully be changed with time.
