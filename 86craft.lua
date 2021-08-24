@@ -149,6 +149,16 @@ while (IP < 16384) do -- Play Program
 			opCode = 5
 		end
 		
+		if (RAM[IP] == 12) then -- OR AL
+			bytesWanted = 1
+			opCode = 12
+		end
+		
+		if (RAM[IP] == 13) then -- OR AX
+			bytesWanted = 2
+			opCode = 13
+		end
+		
 		-- ADC
 		if (RAM[IP] == 20) then -- ADC AL
 			bytesWanted = 1
@@ -169,7 +179,7 @@ while (IP < 16384) do -- Play Program
 			if (tonumber(AXs,2) < 0) then
 				SF = 1
 			end
-			if (tonumber(AXs,2) > 255) then
+			if (tonumber(AXs,2) > 65535) then
 				AXs = toBits(65535,16)
 				OF = 1
 			end
@@ -186,7 +196,7 @@ while (IP < 16384) do -- Play Program
 			if (tonumber(CXs,2) < 0) then
 				SF = 1
 			end
-			if (tonumber(CXs,2) > 255) then
+			if (tonumber(CXs,2) > 65535) then
 				CXs = toBits(65535,16)
 				OF = 1
 			end
@@ -203,7 +213,7 @@ while (IP < 16384) do -- Play Program
 			if (tonumber(DXs,2) < 0) then
 				SF = 1
 			end
-			if (tonumber(DXs,2) > 255) then
+			if (tonumber(DXs,2) > 65535) then
 				DXs = toBits(65535,16)
 				OF = 1
 			end
@@ -220,13 +230,33 @@ while (IP < 16384) do -- Play Program
 			if (tonumber(BXs,2) < 0) then
 				SF = 1
 			end
-			if (tonumber(BXs,2) > 255) then
+			if (tonumber(BXs,2) > 65535) then
 				BXs = toBits(65535,16)
 				OF = 1
 			end
 			BH = tonumber(string.sub(BXs, 1, 8),2)
 			BL = tonumber(string.sub(BXs, 9, 16),2)
 			opCode = 67
+		end 
+		if (RAM[IP] == 68) then -- INC SP
+			bytesWanted = 0
+			SP = SP+1
+			opCode = 68
+		end 
+		if (RAM[IP] == 69) then -- INC BP
+			bytesWanted = 0
+			BP = BP+1
+			opCode = 69
+		end 
+		if (RAM[IP] == 70) then -- INC SI
+			bytesWanted = 0
+			SI = SI+1
+			opCode = 70
+		end 
+		if (RAM[IP] == 71) then -- INC DI
+			bytesWanted = 0
+			DI = DI+1
+			opCode = 71
 		end 
 		
 		-- NOP
@@ -353,6 +383,44 @@ while (IP < 16384) do -- Play Program
 				AL = tonumber(string.sub(AXs, 9, 16),2)
 				bytesWanted = 0
 			print("ADD AX " .. decimalToHex(IP))
+			end
+		end
+		
+		if (opCode == 12) then ---- Or Immediate with AL
+			ALbin = toBits(AL,8)
+			RAMbin = toBits(RAM[IP],8)
+			ALor = ""
+			for i=1,8 do
+				--if ((RAMbin[i] == "1") or (ALbin[i] == "1")) then
+				if ((string.sub(RAMbin, i, i) == "1") or (string.sub(ALbin, i, i) == "1")) then
+					ALor = ALor .. "1"
+				else 
+					ALor = ALor .. "0"
+				end
+			end
+			AL = tonumber(ALor,2)
+			bytesWanted = 0
+			print("OR AL " .. decimalToHex(IP))
+		end
+		
+		if (opCode == 13) then ---- Or Immediate with AX
+			if (bytesWanted == 2) then
+				bytesWanted = 1
+			elseif (bytesWanted == 1) then
+				AXbin = toBits(combineBytesToWord(AH,AL),16)
+				RAMbin = toBits(combineBytesToWord(RAM[IP],RAM[IP-1]),16)
+				AXor = ""
+				for i=1,16 do
+					if ((string.sub(RAMbin, i, i) == "1") or (string.sub(AXbin, i, i) == "1")) then
+						AXor = AXor .. "1"
+					else 
+						AXor = AXor .. "0"
+					end
+				end
+				AH = tonumber(string.sub(AXor, 1, 8),2)
+				AL = tonumber(string.sub(AXor, 9, 16),2)
+				print("OR AX " .. decimalToHex(IP))
+				bytesWanted = 0
 			end
 		end
 		
