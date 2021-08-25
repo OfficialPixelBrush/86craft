@@ -136,6 +136,10 @@ function combineBytesToWord(high,low)
 	return tonumber(toBits(high,8) .. toBits(low,8),2)
 end
 
+function checkBit(bit, number) 
+	return string.sub(toBits(number), bit, bit)
+end
+
 
 while (IP < 16384) do -- Play Program
 	IP = IP+1
@@ -143,198 +147,122 @@ while (IP < 16384) do -- Play Program
 		if (RAM[IP] == 4) then -- ADD to AL
 			bytesWanted = 1
 			opCode = 4
-		end
-		if (RAM[IP] == 5) then -- ADD to AX
+		elseif (RAM[IP] == 5) then -- ADD to AX
 			bytesWanted = 2
 			opCode = 5
-		end
-		
-		if (RAM[IP] == 12) then -- OR AL
+		elseif (RAM[IP] == 12) then -- OR AL
 			bytesWanted = 1
 			opCode = 12
-		end
-		
-		if (RAM[IP] == 13) then -- OR AX
+		elseif (RAM[IP] == 13) then -- OR AX
 			bytesWanted = 2
 			opCode = 13
-		end
-		
-		-- ADC
-		if (RAM[IP] == 20) then -- ADC AL
+		elseif (RAM[IP] == 20) then -- ADC AL
 			bytesWanted = 1
 			opCode = 20
-		end 
-		if (RAM[IP] == 21) then -- ADC AX
+		elseif (RAM[IP] == 21) then -- ADC AX
 			bytesWanted = 2
 			opCode = 21
-		end 
-		
-		-- INC
-		if (RAM[IP] == 64) then -- INC AX
+		elseif (RAM[IP] == 64) then -- INC AX
 			bytesWanted = 0
 			AXs = toBits(combineBytesToWord(AH,AL)+combineBytesToWord(0,1),16)
-			if (tonumber(AXs,2) == 0) then
-				ZF = 1
-			end
-			if (tonumber(AXs,2) < 0) then
-				SF = 1
-			end
-			if (tonumber(AXs,2) > 65535) then
-				AXs = toBits(65535,16)
-				OF = 1
-			end
 			AH = tonumber(string.sub(AXs, 1, 8),2)
 			AL = tonumber(string.sub(AXs, 9, 16),2)
 			opCode = 64
-		end 
-		if (RAM[IP] == 65) then -- INC CX
+		elseif (RAM[IP] == 65) then -- INC CX
 			bytesWanted = 0
 			CXs = toBits(combineBytesToWord(CH,CL)+combineBytesToWord(0,1),16)
-			if (tonumber(CXs,2) == 0) then
-				ZF = 1
-			end
-			if (tonumber(CXs,2) < 0) then
-				SF = 1
-			end
-			if (tonumber(CXs,2) > 65535) then
-				CXs = toBits(65535,16)
-				OF = 1
-			end
 			CH = tonumber(string.sub(CXs, 1, 8),2)
 			CL = tonumber(string.sub(CXs, 9, 16),2)
 			opCode = 65
-		end 
-		if (RAM[IP] == 66) then -- INC DX
+		elseif (RAM[IP] == 66) then -- INC DX
 			bytesWanted = 0
 			DXs = toBits(combineBytesToWord(DH,DL)+combineBytesToWord(0,1),16)
-			if (tonumber(DXs,2) == 0) then
-				ZF = 1
-			end
-			if (tonumber(DXs,2) < 0) then
-				SF = 1
-			end
-			if (tonumber(DXs,2) > 65535) then
-				DXs = toBits(65535,16)
-				OF = 1
-			end
 			DH = tonumber(string.sub(DXs, 1, 8),2)
 			DL = tonumber(string.sub(DXs, 9, 16),2)
 			opCode = 66
-		end 
-		if (RAM[IP] == 67) then -- INC BX
+		elseif (RAM[IP] == 67) then -- INC BX
 			bytesWanted = 0
 			BXs = toBits(combineBytesToWord(BH,BL)+combineBytesToWord(0,1),16)
-			if (tonumber(BXs,2) == 0) then
-				ZF = 1
-			end
-			if (tonumber(BXs,2) < 0) then
-				SF = 1
-			end
-			if (tonumber(BXs,2) > 65535) then
-				BXs = toBits(65535,16)
-				OF = 1
-			end
 			BH = tonumber(string.sub(BXs, 1, 8),2)
 			BL = tonumber(string.sub(BXs, 9, 16),2)
 			opCode = 67
-		end 
-		if (RAM[IP] == 68) then -- INC SP
+		elseif (RAM[IP] == 68) then -- INC SP
 			bytesWanted = 0
 			SP = SP+1
 			opCode = 68
-		end 
-		if (RAM[IP] == 69) then -- INC BP
+		elseif (RAM[IP] == 69) then -- INC BP
 			bytesWanted = 0
 			BP = BP+1
 			opCode = 69
-		end 
-		if (RAM[IP] == 70) then -- INC SI
+		elseif (RAM[IP] == 70) then -- INC SI
 			bytesWanted = 0
 			SI = SI+1
 			opCode = 70
-		end 
-		if (RAM[IP] == 71) then -- INC DI
+		elseif (RAM[IP] == 71) then -- INC DI
 			bytesWanted = 0
 			DI = DI+1
 			opCode = 71
-		end 
-		
-		-- NOP
-		if (opCode == 144) then -- NOP
+		elseif (opCode == 144) then -- NOP
 			bytesWanted = 0
 			opCode = 144
-		end
-		
-		-- MOV
-		if (RAM[IP] == 176) then -- Move Byte to Register/Memory
+		elseif (RAM[IP] == 176) then -- Move Byte to Register/Memory
 			bytesWanted = 1
 			opCode = 176
-		end 
-		
-		-- Move immediate to Lows
-		if (RAM[IP] == 176) then -- Move immediate to AL
+		elseif (RAM[IP] == 176) then -- Move immediate to AL
 			bytesWanted = 1
 			opCode = 176
-		end 
-		if (RAM[IP] == 177) then -- Move immediate to CL
+		elseif (RAM[IP] == 177) then -- Move immediate to CL
 			bytesWanted = 1
 			opCode = 177
-		end
-		if (RAM[IP] == 178) then -- Move immediate to DL
+		elseif (RAM[IP] == 178) then -- Move immediate to DL
 			bytesWanted = 1
 			opCode = 178
-		end
-		if (RAM[IP] == 179) then -- Move immediate to BL
+		elseif (RAM[IP] == 179) then -- Move immediate to BL
 			bytesWanted = 1
 			opCode = 179
-		end
-		
-		-- Move immediate to Highs
-		if (RAM[IP] == 180) then -- Move immediate to AH
+		elseif (RAM[IP] == 180) then -- Move immediate to AH
 			bytesWanted = 1
 			opCode = 180
-		end 
-		if (RAM[IP] == 181) then -- Move immediate to CH
+		elseif (RAM[IP] == 181) then -- Move immediate to CH
 			bytesWanted = 1
 			opCode = 181
-		end
-		if (RAM[IP] == 182) then -- Move immediate to DH
+		elseif (RAM[IP] == 182) then -- Move immediate to DH
 			bytesWanted = 1
 			opCode = 182
-		end
-		if (RAM[IP] == 183) then -- Move immediate to BH
+		elseif (RAM[IP] == 183) then -- Move immediate to BH
 			bytesWanted = 1
 			opCode = 183
-		end
-		
-		-- Move immediate to AX
-		if (RAM[IP] == 184) then -- Move immediate to AX
+		elseif (RAM[IP] == 184) then -- Move immediate to AX
 			bytesWanted = 2
 			opCode = 184
-		end
-		
-		if (RAM[IP] == 185) then -- Move immediate to CX
+		elseif (RAM[IP] == 185) then -- Move immediate to CX
 			bytesWanted = 2
 			opCode = 185
-		end
-		
-		if (RAM[IP] == 186) then -- Move immediate to DX
+		elseif (RAM[IP] == 186) then -- Move immediate to DX
 			bytesWanted = 2
 			opCode = 186
-		end
-		
-		if (RAM[IP] == 187) then -- Move immediate to BX
+		elseif (RAM[IP] == 187) then -- Move immediate to BX
 			bytesWanted = 2
 			opCode = 187
-		end
-		
-		-- JMP
-		if (opCode == 233) then -- Jump near relative to next instruction
+		elseif (RAM[IP] == 188) then -- Move immediate to SP
+			bytesWanted = 2
+			opCode = 188
+		elseif (RAM[IP] == 189) then -- Move immediate to BP
+			bytesWanted = 2
+			opCode = 189
+		elseif (RAM[IP] == 190) then -- Move immediate to SI
+			bytesWanted = 2
+			opCode = 190
+		elseif (RAM[IP] == 191) then -- Move immediate to DI
+			bytesWanted = 2
+			opCode = 191
+		elseif (RAM[IP] == 205) then -- Move immediate to DI
+			bytesWanted = 1
+			opCode = 205
+		elseif (opCode == 233) then -- Jump near relative to next instruction
 			bytesWanted = 2
 			opCode = 233
-		end
-		
-		if (RAM[IP] == 235) then -- Jump short relative to next instruction
+		elseif (RAM[IP] == 235) then -- Jump short relative to next instruction
 			bytesWanted = 1
 			opCode = 235
 		end
@@ -342,51 +270,34 @@ while (IP < 16384) do -- Play Program
 	else 	-- If bytes are wanted, do what that instruction does
 		if (opCode == 4) then ---- ADD to AL
 			AL = AL+RAM[IP]
-			if (AL > 255) then
-				AL = 255
-				CF = 1
-			end
-			if (AL == 0) then
-				ZF = 1
-			end
-			if (AL < 0) then
+			if (checkBit(1,AL) == "1") then -- Sign Flag Check
 				SF = 1
-			end
-			if (AL > 255) then
-				AL = 255
-				OF = 1
-			end
+			else 
+				SF = 0
+			end	
 			bytesWanted = 0
-		end
-		
-		if (opCode == 5) then ---- ADD to AX
+		elseif (opCode == 5) then ---- ADD to AX
 			if (bytesWanted == 2) then
 				--AL = RAM[IP]
 				bytesWanted = 1
 			elseif (bytesWanted == 1) then
 				AXs = toBits(combineBytesToWord(AH,AL)+combineBytesToWord(RAM[IP],RAM[IP-1]),16)
-				if (tonumber(AXs,2) > 65535) then
-					AXs = toBits(tonumber(AXs,2)-65535,16)
-					CF = 1
-				end
-				if (tonumber(AXs,2) == 0) then
-					ZF = 1
-				end
-				if (tonumber(AXs,2) < 0) then
-					SF = 1
-				end
-				if (tonumber(AXs,2) > 65535) then
-					AXs = toBits(65535,16)
-					OF = 1
-				end
 				AH = tonumber(string.sub(AXs, 1, 8),2)
 				AL = tonumber(string.sub(AXs, 9, 16),2)
+				--print("ADD AX " .. decimalToHex(IP))
+				if (checkBit(1,AXs) == "1") then -- Sign Flag Check
+					SF = 1
+				else 
+					SF = 0
+				end	
+				if (128-tonumber(AXs,2) == 0) then
+					ZF = 1
+				else 
+					ZF = 0
+				end
 				bytesWanted = 0
-			print("ADD AX " .. decimalToHex(IP))
 			end
-		end
-		
-		if (opCode == 12) then ---- Or Immediate with AL
+		elseif (opCode == 12) then ---- Or Immediate with AL
 			ALbin = toBits(AL,8)
 			RAMbin = toBits(RAM[IP],8)
 			ALor = ""
@@ -399,11 +310,14 @@ while (IP < 16384) do -- Play Program
 				end
 			end
 			AL = tonumber(ALor,2)
+			--print("OR AL " .. decimalToHex(IP))
+			if (checkBit(1,AL) == "1") then -- Sign Flag Check
+				SF = 1
+			else 
+				SF = 0
+			end	
 			bytesWanted = 0
-			print("OR AL " .. decimalToHex(IP))
-		end
-		
-		if (opCode == 13) then ---- Or Immediate with AX
+		elseif (opCode == 13) then ---- Or Immediate with AX
 			if (bytesWanted == 2) then
 				bytesWanted = 1
 			elseif (bytesWanted == 1) then
@@ -419,155 +333,240 @@ while (IP < 16384) do -- Play Program
 				end
 				AH = tonumber(string.sub(AXor, 1, 8),2)
 				AL = tonumber(string.sub(AXor, 9, 16),2)
-				print("OR AX " .. decimalToHex(IP))
+				--print("OR AX " .. decimalToHex(IP))
+				if (checkBit(1,AH) == "1") then -- Sign Flag Check
+					SF = 1
+				else 
+					SF = 0
+				end	
 				bytesWanted = 0
 			end
-		end
-		
-		if (opCode == 20) then ---- ADD with Carry to AL
+		elseif (opCode == 20) then ---- ADD with Carry to AL
 			AL = AL+RAM[IP]+CF
-			if (AL > 255) then
-				AL = AL-255
-				CF = 1
-			end
-			if (AL == 0) then
-				ZF = 1
-			end
-			if (AL < 0) then
+			if (checkBit(1,AL) == "1") then -- Sign Flag Check
 				SF = 1
-			end
-			if (AL > 255) then
-				AL = 255
-				OF = 1
-			end
+			else 
+				SF = 0
+			end	
 			bytesWanted = 0
-		end
-		
-		if (opCode == 21) then ---- ADD with Carry to AX
+		elseif (opCode == 21) then ---- ADD with Carry to AX
 			if (bytesWanted == 2) then
 				bytesWanted = 1
 			elseif (bytesWanted == 1) then
 				AXs = toBits(combineBytesToWord(AH,AL)+combineBytesToWord(RAM[IP],RAM[IP-1])+tonumber(toBits(CF,16),2),16)
-				if (tonumber(AXs,2) > 65535) then
-					AXs = toBits(tonumber(AXs,2)-65535,16)
-					CF = 1
-				end
-				if (tonumber(AXs,2) == 0) then
-					ZF = 1
-				end
-				if (tonumber(AXs,2) < 0) then
-					SF = 1
-				end
-				if (tonumber(AXs,2) > 255) then
-					AXs = toBits(65535,16)
-					OF = 1
-				end
 				AH = tonumber(string.sub(AXs, 1, 8),2)
 				AL = tonumber(string.sub(AXs, 9, 16),2)
 				bytesWanted = 0
-				print("ADC AX " .. decimalToHex(IP))
+				--print("ADC AX " .. decimalToHex(IP))
+				if (checkBit(1,AXs) == "1") then -- Sign Flag Check
+					SF = 1
+				else 
+					SF = 0
+				end		
 			end
-		end
-		
-		-- Move immediate to Lows
-		if (opCode == 176) then -- Move immediate to AL
+		elseif (opCode == 176) then -- Move immediate to AL
 			AL = RAM[IP]
+			if (checkBit(1,AL) == "1") then -- Sign Flag Check
+				SF = 1
+			else 
+				SF = 0
+			end
 			bytesWanted = 0
-		end
-		if (opCode == 177) then -- Move immediate to CL
+		elseif (opCode == 177) then -- Move immediate to CL
 			CL = RAM[IP]
+			if (checkBit(1,CL) == "1") then -- Sign Flag Check
+				SF = 1
+			else 
+				SF = 0
+			end
 			bytesWanted = 0
-		end
-		if (opCode == 178) then -- Move immediate to DL
+		elseif(opCode == 178) then -- Move immediate to DL
 			DL = RAM[IP]
+			if (checkBit(1,DL) == "1") then -- Sign Flag Check
+				SF = 1
+			else 
+				SF = 0
+			end
 			bytesWanted = 0
-		end
-		if (opCode == 179) then -- Move immediate to BL
+		elseif (opCode == 179) then -- Move immediate to BL
 			BL = RAM[IP]
+			if (checkBit(1,BL) == "1") then -- Sign Flag Check
+				SF = 1
+			else 
+				SF = 0
+			end
 			bytesWanted = 0
-		end
-		
-		-- Move immediate to Highs
-		if (opCode == 180) then -- Move immediate to AH
+		elseif (opCode == 180) then -- Move immediate to AH
 			AH = RAM[IP]
+			if (checkBit(1,AH) == "1") then -- Sign Flag Check
+				SF = 1
+			else 
+				SF = 0
+			end
 			bytesWanted = 0
-		end
-		if (opCode == 181) then -- Move immediate to CH
+		elseif (opCode == 181) then -- Move immediate to CH
 			CH = RAM[IP]
+			if (checkBit(1,CH) == "1") then -- Sign Flag Check
+				SF = 1
+			else 
+				SF = 0
+			end
 			bytesWanted = 0
-		end
-		if (opCode == 182) then -- Move immediate to DH
+		elseif (opCode == 182) then -- Move immediate to DH
 			DH = RAM[IP]
+			if (checkBit(1,DH) == "1") then -- Sign Flag Check
+				SF = 1
+			else 
+				SF = 0
+			end
 			bytesWanted = 0
-		end
-		if (opCode == 183) then -- Move immediate to BH
+		elseif (opCode == 183) then -- Move immediate to BH
 			BH = RAM[IP]
+			if (checkBit(1,BH) == "1") then -- Sign Flag Check
+				SF = 1
+			else 
+				SF = 0
+			end
 			bytesWanted = 0
-		end
-		
-		-- Move immediate to 16-bit
-		if (opCode == 184) then -- Move immediate to AX
+		elseif (opCode == 184) then -- Move immediate to AX
 			if (bytesWanted == 2) then
 				AL = RAM[IP]
 				bytesWanted = 1
 			elseif (bytesWanted == 1) then
-				AH = RAM[IP]				
+				AH = RAM[IP]	
+				if (checkBit(1,AH) == "1") then -- Sign Flag Check
+					SF = 1
+				else 
+					SF = 0
+				end			
 				bytesWanted = 0
 			end
-			print("MOV AX " .. decimalToHex(IP))
-		end
-		
-		if (opCode == 185) then -- Move immediate to CX
+			--print("MOV AX " .. decimalToHex(IP))
+		elseif (opCode == 185) then -- Move immediate to CX
 			if (bytesWanted == 2) then
 				CL = RAM[IP]
 				bytesWanted = 1
 			elseif (bytesWanted == 1) then
-				CH = RAM[IP]				
+				CH = RAM[IP]	
+				if (checkBit(1,CH) == "1") then -- Sign Flag Check
+					SF = 1
+				else 
+					SF = 0
+				end						
 				bytesWanted = 0
 			end
-		end
-		
-		if (opCode == 186) then -- Move immediate to DX
+		elseif (opCode == 186) then -- Move immediate to DX
 			if (bytesWanted == 2) then
 				DL = RAM[IP]
 				bytesWanted = 1
 			elseif (bytesWanted == 1) then
-				DH = RAM[IP]				
+				DH = RAM[IP]	
+				if (checkBit(1,DH) == "1") then -- Sign Flag Check
+					SF = 1
+				else 
+					SF = 0
+				end						
 				bytesWanted = 0
 			end
-		end
-		
-		if (opCode == 187) then -- Move immediate to BX
+		elseif (opCode == 187) then -- Move immediate to BX
 			if (bytesWanted == 2) then
 				BL = RAM[IP]
 				bytesWanted = 1
 			elseif (bytesWanted == 1) then
-				BH = RAM[IP]				
+				BH = RAM[IP]	
+				if (checkBit(1,BH) == "1") then -- Sign Flag Check
+					SF = 1
+				else 
+					SF = 0
+				end						
 				bytesWanted = 0
 			end
-		end
-		
-		-- JMP
-		if (opCode == 233) then -- Jump near relative to next instruction
+		elseif (opCode == 188) then -- Move immediate to SP
+			if (bytesWanted == 2) then
+				bytesWanted = 1
+			elseif (bytesWanted == 1) then
+				SP = combineBytesToWord(RAM[IP], RAM[IP]-1)
+				if (checkBit(1,SP) == "1") then -- Sign Flag Check
+					SF = 1
+				else 
+					SF = 0
+				end			
+				bytesWanted = 0
+			end
+		elseif (opCode == 189) then -- Move immediate to BP
+			if (bytesWanted == 2) then
+				bytesWanted = 1
+			elseif (bytesWanted == 1) then
+				BP = combineBytesToWord(RAM[IP], RAM[IP]-1)
+				if (checkBit(1,BP) == "1") then -- Sign Flag Check
+					SF = 1
+				else 
+					SF = 0
+				end			
+				bytesWanted = 0
+			end
+		elseif (opCode == 190) then -- Move immediate to SI
+			if (bytesWanted == 2) then
+				bytesWanted = 1
+			elseif (bytesWanted == 1) then
+				SI = combineBytesToWord(RAM[IP], RAM[IP]-1)
+				if (checkBit(1,SI) == "1") then -- Sign Flag Check
+					SF = 1
+				else 
+					SF = 0
+				end		
+				bytesWanted = 0
+			end
+		elseif (opCode == 191) then -- Move immediate to DI
+			if (bytesWanted == 2) then
+				bytesWanted = 1
+			elseif (bytesWanted == 1) then
+				DI = combineBytesToWord(RAM[IP], RAM[IP]-1)
+				if (checkBit(1,DI) == "1") then -- Sign Flag Check
+					SF = 1
+				else 
+					SF = 0
+				end		
+				bytesWanted = 0
+			end
+		elseif (opCode == 205) then -- INT
+			--print("INT")
+			if (RAM[IP] == 33) then -- INT 21
+				if (AH == 9) then -- INT 21,9
+					while (RAM[IP] ~= 36) do
+						io.write(string.char(RAM[IP]))
+						IP = IP+1
+					end
+				end 
+			end
+			bytesWanted = 0
+		elseif (opCode == 233) then -- Jump near relative to next instruction
 			if (bytesWanted == 2) then
 				bytesWanted = 1
 			elseif (bytesWanted == 1) then
 				IP = IP + combineBytesToWord(RAM[IP],RAM[IP-1])
 				bytesWanted = 0
 			end
-		end
-		
-		if (opCode == 235) then -- Jump short relative to next instruction
+		elseif (opCode == 235) then -- Jump short relative to next instruction
 			IP = IP + (128-RAM[IP])
-			print("AX: " .. decimalToHex(tonumber(toBits(AH,8) .. toBits(AL,8),2)))
+			--print("AX: " .. decimalToHex(tonumber(toBits(AH,8) .. toBits(AL,8),2)))
 			bytesWanted = 0
 		end
 	end
+	
+	
 end
 print("AX: " .. decimalToHex(combineBytesToWord(AH,AL)))
 print("BX: " .. decimalToHex(combineBytesToWord(BH,BL)))
 print("CX: " .. decimalToHex(combineBytesToWord(CH,CL)))
 print("DX: " .. decimalToHex(combineBytesToWord(DH,DL)))
 print("")
-print("CF: " .. CF)
 print("OF: " .. OF)
+print("DF: " .. DF)
+print("IF: " .. IF)
+print("TF: " .. TF)
+print("SF: " .. SF)
+print("ZF: " .. ZF)
+print("AF: " .. AF)
+print("PF: " .. PF)
+print("CF: " .. CF)
