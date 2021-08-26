@@ -1,9 +1,27 @@
+
+<p align="center">
+  <img src="https://img.shields.io/github/issues-raw/OfficialPixelBrush/86craft"/>
+  <img src="https://img.shields.io/github/last-commit/OfficialPixelBrush/86craft"/>
+</p>
+<p align="center">
+  <img src="https://img.shields.io/twitter/follow/pixel_brush?style=social"/>
+</p>
+
 86craft
 =======
 An 8086 Emulator for the Minecraft ComputerCraft Mod.
 This Emulator has the goal to bring x86 based Software to ComputerCraft/Minecraft!
 
 (I hereby also acknowledge the existance of lunatic86, so this'll just be a one-file based, worse, still maintained alternative.)
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Written%20in-Lua-blue"/>
+  <img src="https://img.shields.io/badge/Made%20for-ComputerCraft-lightgrey"/>
+</p>
+<p align="center">
+  <img src="https://img.shields.io/github/languages/code-size/OfficialPixelBrush/86craft"/>
+  <img src="https://img.shields.io/tokei/lines/github/OfficialPixelBrush/86craft"/>
+</p>
 
 Running
 --------
