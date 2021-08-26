@@ -553,9 +553,20 @@ while (IP < 16384) do -- Play Program
 			bytesWanted = 0
 		end
 	end
-	
-	
 end
+--[[
+@todo Implement Overflow flag
+@todo Implement Zero Flag
+@todo Implement Auxiliary Cary Flag
+@todo Implement Parity Flag
+@todo Implement Carry Flag
+@todo Implement Directional Flag
+@todo Implement Interrupt Flag
+@todo Implement Trap Flag?
+@todo Make sure Increments work as intended for 16-Bit Registers
+@todo Implement Decrement Instructions, alongside logic for going into the negative
+@todo Implementing Stack, alongside the ability to push and pop from/to Registers 
+]]--
 print("AX: " .. decimalToHex(combineBytesToWord(AH,AL)))
 print("BX: " .. decimalToHex(combineBytesToWord(BH,BL)))
 print("CX: " .. decimalToHex(combineBytesToWord(CH,CL)))
