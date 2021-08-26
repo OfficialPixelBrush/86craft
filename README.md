@@ -2,6 +2,7 @@
 <p align="center">
   <img src="https://img.shields.io/github/issues-raw/OfficialPixelBrush/86craft"/>
   <img src="https://img.shields.io/github/last-commit/OfficialPixelBrush/86craft"/>
+  <img src="https://img.shields.io/github/milestones/closed/OfficialPixelBrush/86craft"/>
 </p>
 <p align="center">
   <img src="https://img.shields.io/twitter/follow/pixel_brush?style=social"/>
