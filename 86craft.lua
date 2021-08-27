@@ -1,4 +1,7 @@
 local arg = { ... }
+
+BitLimit16 = 65536
+BitLimit8  = 255
 -- 8-bit registers
 -- Main Registers
 -- AX primary accumulator 
@@ -189,19 +192,83 @@ while (IP < 16384) do -- Play Program
 		elseif (RAM[IP] == 68) then -- INC SP
 			bytesWanted = 0
 			SP = SP+1
+			if (SP > BitLimit16) {	-- Overflow
+				SP = SP - BitLimit16
+			}
 			opCode = 68
 		elseif (RAM[IP] == 69) then -- INC BP
 			bytesWanted = 0
 			BP = BP+1
+			if (BP > BitLimit16) {	-- Overflow
+				BP = BP - BitLimit16
+			}
 			opCode = 69
 		elseif (RAM[IP] == 70) then -- INC SI
 			bytesWanted = 0
 			SI = SI+1
+			if (SI > BitLimit16) {	-- Overflow
+				SI = SI - BitLimit16
+			}
 			opCode = 70
 		elseif (RAM[IP] == 71) then -- INC DI
 			bytesWanted = 0
 			DI = DI+1
+			if (DI > BitLimit16) {	-- Overflow
+				DI = Di - BitLimit16
+			}
 			opCode = 71
+		elseif (RAM[IP] == 72) then -- DEC AX
+			bytesWanted = 0
+			AXs = toBits(combineBytesToWord(AH,AL)-combineBytesToWord(0,1),16)
+			AH = tonumber(string.sub(AXs, 1, 8),2)
+			AL = tonumber(string.sub(AXs, 9, 16),2)
+			opCode = 72
+		elseif (RAM[IP] == 73) then -- DEC CX
+			bytesWanted = 0
+			CXs = toBits(combineBytesToWord(CH,CL)-combineBytesToWord(0,1),16)
+			CH = tonumber(string.sub(CXs, 1, 8),2)
+			CL = tonumber(string.sub(CXs, 9, 16),2)
+			opCode = 73
+		elseif (RAM[IP] == 74) then -- DEC DX
+			bytesWanted = 0
+			DXs = toBits(combineBytesToWord(DH,DL)-combineBytesToWord(0,1),16)
+			DH = tonumber(string.sub(DXs, 1, 8),2)
+			DL = tonumber(string.sub(DXs, 9, 16),2)
+			opCode = 74
+		elseif (RAM[IP] == 75) then -- DEC BX
+			bytesWanted = 0
+			BXs = toBits(combineBytesToWord(BH,BL)-combineBytesToWord(0,1),16)
+			BH = tonumber(string.sub(BXs, 1, 8),2)
+			BL = tonumber(string.sub(BXs, 9, 16),2)
+			opCode = 75
+		elseif (RAM[IP] == 76) then -- DEC SP
+			bytesWanted = 0
+			SP = SP+1
+			if (SP < 0) {	-- Underflow
+				SP = SP + BitLimit16
+			}
+			opCode = 76
+		elseif (RAM[IP] == 77) then -- DEC BP
+			bytesWanted = 0
+			BP = BP+1
+			if (BP < 0) {	-- Underflow
+				BP = BP + BitLimit16
+			}
+			opCode = 77
+		elseif (RAM[IP] == 78) then -- DEC SI
+			bytesWanted = 0
+			SI = SI+1
+			if (SI < 0) {	-- Underflow
+				SI = SI + BitLimit16
+			}
+			opCode = 78
+		elseif (RAM[IP] == 79) then -- DEC DI
+			bytesWanted = 0
+			DI = DI+1
+			if (DI < 0) {	-- Underflow
+				DI = Di + BitLimit16
+			}
+			opCode = 79
 		elseif (opCode == 144) then -- NOP
 			bytesWanted = 0
 			opCode = 144
@@ -554,19 +621,6 @@ while (IP < 16384) do -- Play Program
 		end
 	end
 end
---[[
-@todo Implement Overflow flag
-@todo Implement Zero Flag
-@todo Implement Auxiliary Cary Flag
-@todo Implement Parity Flag
-@todo Implement Carry Flag
-@todo Implement Directional Flag
-@todo Implement Interrupt Flag
-@todo Implement Trap Flag?
-@todo Make sure Increments work as intended for 16-Bit Registers
-@todo Implement Decrement Instructions, alongside logic for going into the negative
-@todo Implementing Stack, alongside the ability to push and pop from/to Registers 
-]]--
 print("AX: " .. decimalToHex(combineBytesToWord(AH,AL)))
 print("BX: " .. decimalToHex(combineBytesToWord(BH,BL)))
 print("CX: " .. decimalToHex(combineBytesToWord(CH,CL)))
