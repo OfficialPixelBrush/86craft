@@ -1,6 +1,6 @@
 local arg = { ... }
 
-BitLimit16 = 65536
+BitLimit16 = 65535 
 BitLimit8  = 255
 -- 8-bit registers
 -- Main Registers
@@ -26,7 +26,7 @@ DI  = 0
 -- Base Pointer 
 BP = 0
 -- Stack Pointer 
-SP = 0
+SP = BitLimit16
 
 -- Program Counter
 -- Instruction Pointer 
@@ -48,7 +48,7 @@ OF = 0
 -- Direction Flag
 DF = 0
 -- Iterrupt Flag
-IF = 0
+IF = 1
 -- Trap Flag
 TF = 0
 -- Sign Flag
@@ -71,7 +71,7 @@ RAM = {}
 
 -- Load Program
 local file = fs.open( arg[1], "rb" )
-for i=1,16384 do -- Initialize RAM with Program (16KB)
+for i=1,BitLimit16 do -- Initialize RAM with Program (64KB)
 	byteRead = file.read()
 	RAM[i] = byteRead
 end
@@ -136,7 +136,20 @@ opCode = 0
 bytesWanted = 0
 
 function combineBytesToWord(high,low)
+	--[[ @todo Figure out why shit broki :(
+	@body "86craft.lua:85: bad argument: double expected, got nil"
+	Likely caused by Stack not being filled with correct values or something?
+	]]--
 	return tonumber(toBits(high,8) .. toBits(low,8),2)
+end
+
+function splitWordToBytes(word,hl)
+	wordString = toBits(word,16)
+	if ((hl == "l") or (hl == "L") or (hl == "Low")) then -- low
+		return tonumber(string.sub(wordString, 9, 16),2)
+	elseif ((hl == "h") or (hl == "H") or (hl == "High")) then -- high
+		return tonumber(string.sub(wordString, 1, 8),2)
+	end
 end
 
 function checkBit(bit, number) 
@@ -144,7 +157,7 @@ function checkBit(bit, number)
 end
 
 
-while (IP < 16384) do -- Play Program
+while (IP < BitLimit16) do -- Play Program
 	IP = IP+1
 	if (bytesWanted == 0) then -- Read Opcodes if no bytes are wanted
 		if (RAM[IP] == 4) then -- ADD to AL
@@ -192,30 +205,30 @@ while (IP < 16384) do -- Play Program
 		elseif (RAM[IP] == 68) then -- INC SP
 			bytesWanted = 0
 			SP = SP+1
-			if (SP > BitLimit16) {	-- Overflow
+			if (SP > BitLimit16) then	-- Overflow
 				SP = SP - BitLimit16
-			}
+			end
 			opCode = 68
 		elseif (RAM[IP] == 69) then -- INC BP
 			bytesWanted = 0
 			BP = BP+1
-			if (BP > BitLimit16) {	-- Overflow
+			if (BP > BitLimit16) then	-- Overflow
 				BP = BP - BitLimit16
-			}
+			end
 			opCode = 69
 		elseif (RAM[IP] == 70) then -- INC SI
 			bytesWanted = 0
 			SI = SI+1
-			if (SI > BitLimit16) {	-- Overflow
+			if (SI > BitLimit16) then	-- Overflow
 				SI = SI - BitLimit16
-			}
+			end
 			opCode = 70
 		elseif (RAM[IP] == 71) then -- INC DI
 			bytesWanted = 0
 			DI = DI+1
-			if (DI > BitLimit16) {	-- Overflow
+			if (DI > BitLimit16) then	-- Overflow
 				DI = Di - BitLimit16
-			}
+			end
 			opCode = 71
 		elseif (RAM[IP] == 72) then -- DEC AX
 			bytesWanted = 0
@@ -244,31 +257,103 @@ while (IP < 16384) do -- Play Program
 		elseif (RAM[IP] == 76) then -- DEC SP
 			bytesWanted = 0
 			SP = SP+1
-			if (SP < 0) {	-- Underflow
+			if (SP < 0) then	-- Underflow
 				SP = SP + BitLimit16
-			}
+			end
 			opCode = 76
 		elseif (RAM[IP] == 77) then -- DEC BP
 			bytesWanted = 0
 			BP = BP+1
-			if (BP < 0) {	-- Underflow
+			if (BP < 0) then	-- Underflow
 				BP = BP + BitLimit16
-			}
+			end
 			opCode = 77
 		elseif (RAM[IP] == 78) then -- DEC SI
 			bytesWanted = 0
 			SI = SI+1
-			if (SI < 0) {	-- Underflow
+			if (SI < 0) then	-- Underflow
 				SI = SI + BitLimit16
-			}
+			end
 			opCode = 78
 		elseif (RAM[IP] == 79) then -- DEC DI
 			bytesWanted = 0
 			DI = DI+1
-			if (DI < 0) {	-- Underflow
+			if (DI < 0) then	-- Underflow
 				DI = Di + BitLimit16
-			}
+			end
 			opCode = 79
+		elseif (RAM[IP] == 80) then -- PUSH AX
+			bytesWanted = 0
+			SP = SP-1
+			RAM[SP] = AH
+			RAM[SP+1] = AL
+			opCode = 80
+		elseif (RAM[IP] == 81) then -- PUSH CX
+			bytesWanted = 0
+			SP = SP-1
+			RAM[SP] = CH
+			RAM[SP+1] = CL
+			opCode = 81
+		elseif (RAM[IP] == 82) then -- PUSH DX
+			bytesWanted = 0
+			SP = SP-1
+			RAM[SP] = DH
+			RAM[SP+1] = DL
+			opCode = 82
+		elseif (RAM[IP] == 83) then -- PUSH BX
+			bytesWanted = 0
+			SP = SP-1
+			RAM[SP] = BH
+			RAM[SP+1] = BL
+			opCode = 83
+		elseif (RAM[IP] == 84) then -- PUSH SP
+			bytesWanted = 0
+			SP = SP-1
+			RAM[SP] = splitWordToBytes(SP,"h")
+			RAM[SP+1] = splitWordToBytes(SP,"l")
+			opCode = 84
+		elseif (RAM[IP] == 85) then -- PUSH BP
+			bytesWanted = 0
+			SP = SP-1
+			RAM[SP] = splitWordToBytes(BP,"h")
+			RAM[SP+1] = splitWordToBytes(BP,"l")
+			opCode = 85
+		elseif (RAM[IP] == 86) then -- PUSH SI
+			bytesWanted = 0
+			SP = SP-1
+			RAM[SP] = splitWordToBytes(SI,"h")
+			RAM[SP+1] = splitWordToBytes(SI,"l")
+			opCode = 86
+		elseif (RAM[IP] == 87) then -- PUSH DI
+			bytesWanted = 0
+			SP = SP-1
+			RAM[SP] = splitWordToBytes(DI,"h")
+			RAM[SP+1] = splitWordToBytes(DI,"l")
+			opCode = 87
+		elseif (RAM[IP] == 88) then -- POP AX
+			bytesWanted = 0
+			AH = RAM[SP]
+			AL = RAM[SP+1]
+			SP = SP+1
+			opCode = 88
+		elseif (RAM[IP] == 89) then -- POP CX
+			bytesWanted = 0
+			CH = RAM[SP]
+			CL = RAM[SP+1]
+			SP = SP+1
+			opCode = 89
+		elseif (RAM[IP] == 90) then -- POP DX
+			bytesWanted = 0
+			CH = RAM[SP]
+			CL = RAM[SP+1]
+			SP = SP+1
+			opCode = 90
+		elseif (RAM[IP] == 91) then -- POP BX
+			bytesWanted = 0
+			CH = RAM[SP]
+			CL = RAM[SP+1]
+			SP = SP+1
+			opCode = 91
 		elseif (opCode == 144) then -- NOP
 			bytesWanted = 0
 			opCode = 144
